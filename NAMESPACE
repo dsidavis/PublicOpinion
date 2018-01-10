@@ -1,6 +1,7 @@
 import(readxl)
 #import(plotly)
 #import(ggplot2)
+import(htmlwidgets)
 
 # Making the plots
 export(plot_frames, plot_sources)

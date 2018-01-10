@@ -44,9 +44,9 @@ function(file = "ssm_polls.csv", expand = TRUE,
 
 
 findBadYears =
-function(x, vals = x[[var]], var = "Date")
+function(x, vals = x[[var]], var = "Date", max.year = as.integer(format(Sys.Date(), "%Y")))
 {
-  
+    vals > 2017  
 }
 
 readTopicData =

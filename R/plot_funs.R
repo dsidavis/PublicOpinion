@@ -26,7 +26,9 @@ byInterval = function(df, interval)
     byX
 }
 
-plot_frames = function(df, main = deparse(subtitute(df)), df_polls = NULL, 
+plot_frames = function(df, main = deparse(subtitute(df)),
+                       outfile = character(),
+                       df_polls = NULL, 
                        events = NULL, eventHover = NULL,
                        frame_names = computeFrameNames(),
                        interval = df$Week_start,
@@ -71,18 +73,13 @@ plot_frames = function(df, main = deparse(subtitute(df)), df_polls = NULL,
         b = ggplotly(b, dynamicTicks = TRUE)
         subplot(a, b, nrows = 2, shareX = TRUE, heights = c(0.8, 0.2))
     } else {
-        ggplotly(a, dynamicTicks = TRUE)
+        b = ggplotly(a, dynamicTicks = TRUE)
     }
-    #     geom_point(data = df_polls, aes(x = Date, y = Index, color = House, size = N),
-    #                    alpha = 0.5) +
-    #         geom_smooth(data = df_polls, aes(x = Date, y = Index), method = "loess",
-    #                     span = span, color = "gray", se = FALSE) +
-    #         geom_hline(yintercept = 50, linetype = "dashed")
 
-    # b = ggplotly(a, dynamicTicks = TRUE) 
-    # #%>% layout(xaxis = list(rangeslider = list(type = "date"))) 
+    if(length(outfile))
+       saveWidget(b, file = outfile)
 
-    # b
+    b
 }
 
 plot_sources = function(df, main)

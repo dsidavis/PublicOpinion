@@ -33,28 +33,21 @@ plot_frames(df, main = deparse(subtitute(df)), df_polls = NULL, events = NULL,
 
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
 }
 \references{
 %% ~put references to the literature/web site here ~
 }
 \author{
-%%  ~~who you are~~
+Matt Espe
 }
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
+#
+# Add to examples writing to a file.
+# browseURL() to visit the file in a browser.
+
 gc.articles = readTopicData("guncontrol")
 gc.poll = readPollData("guncontrol")
 plot_frames(gc.articles, gc.poll, "Gun Control")
@@ -62,6 +55,10 @@ plot_frames(gc.articles, gc.poll, "Gun Control")
 
 data("GunViolenceEvents")
 plot_frames(gc.articles, gc.poll, "Gun Control", events = GunViolenceEvents)
+
+
+# Subset events - only those in California
+#  or those between 2010 & 2017
 }
 \keyword{}
 \keyword{}
