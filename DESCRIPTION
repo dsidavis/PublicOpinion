@@ -1,0 +1,6 @@
+Package: PublicOpinion
+Version: 0.1-0
+Title: Exploring Public Opinion on Political Topics
+Authors: Matt Espe, Duncan Temple Lang
+Maintainer: Duncan Temple Lang <dtemplelang@ucdavis.edu>
+License: BSD
