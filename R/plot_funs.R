@@ -26,11 +26,12 @@ byInterval = function(df, interval)
     byX
 }
 
-plot_frames = function(df, df_polls, frame_names, main, interval = df$Week_start,
-                       polls = TRUE, span = 0.1, events = NULL,
-                       eventLab = NULL)
+plot_frames = function(df, main = deparse(subtitute(df)), df_polls = NULL, 
+                       events = NULL, eventHover = NULL,
+                       frame_names = computeFrameNames(),
+                       interval = df$Week_start,
+                       polls = !missing(df_polls), span = 0.1)
 {
-
     byWeek = byInterval(df, interval)
 
     pro = byWeek$tone == "Pro"
@@ -53,11 +54,11 @@ plot_frames = function(df, df_polls, frame_names, main, interval = df$Week_start
         a = a %>% add_segments(x = ~events, y = max(byWeek$Count),
                                xend = ~events, yend = min(byWeek$Count),
                                inherit = FALSE, name = "Events",
-                               hoverinfo = "text", text = ~eventLab,
+                               hoverinfo = "text", text = ~ eventHover,
                                line = list(dash = "dot", width = 1,
                                            color = "rgba(67,67,67,1)"))
     }
-        if(polls){
+    if(polls){
         b = ggplot(df_polls, aes(x = Date, y = Index, color = House, size = N)) +
             geom_point() +
             geom_smooth(color = "gray", se = FALSE, span = 0.5) +
@@ -105,3 +106,6 @@ plot_sources = function(df, main)
     ggplotly(c)
 
 }
+
+
+
