@@ -1,2 +1,16 @@
-export(plot_frames)
+import(readxl)
+#import(plotly)
+#import(ggplot2)
+
+# Making the plots
+export(plot_frames, plot_sources)
+
+export(readPollData, readTopicData)
+
+# Metrics for finding intervals of interest.
+export(surgeInfo)
+
+# for debugging
+export(expandDateFrameTone,
+       computeFrameNames)
 
