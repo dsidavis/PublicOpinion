@@ -28,7 +28,7 @@ function(file = "frames.xlsx",
          dataDir = getOption("PublicOpinionDataDir", "../MediaFramingData/public_opinion_analysis/data"))
 {
     if(!file.exists(file))
-        f = path.file(dataDir, file)
+        f = file.path(dataDir, file)
     else
         f = file
     

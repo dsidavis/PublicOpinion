@@ -1,6 +1,6 @@
 import(readxl)
-#import(plotly)
-#import(ggplot2)
+import(ggplot2)
+import(plotly)
 import(htmlwidgets)
 
 # Making the plots
@@ -10,6 +10,7 @@ export(readPollData, readTopicData)
 
 # Metrics for finding intervals of interest.
 export(surgeInfo)
+export(findBadYears)
 
 # for debugging
 export(expandDateFrameTone,

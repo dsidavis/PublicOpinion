@@ -3,16 +3,19 @@ findData =
 function(file, 
          dataDir = getOption("PublicOpinionDataDir", "../MediaFramingData/public_opinion_analysis/data"), poll = FALSE)      
 {
+    dataDir = path.expand(dataDir)
+    
     if(file.exists(file))
-        return(f)
+        return(file)
 
-    f = path.file(dataDir, file)
-    if(file.exists(file))
+    f = file.path(dataDir, file)
+    
+    if(file.exists(f))
         return(f)
 
     
     if(poll)
-       f = path.file(paste0(file, "_polls.csv"), dataDir)
+       f = file.path(dataDir, paste0(file, "_polls.csv"))
     else
         f = grep(sprintf("%s_with_metadata.*\\.csv", f), list.files(dataDir, full = TRUE), value = TRUE)
 
@@ -27,7 +30,7 @@ readPollData =
 function(file = "ssm_polls.csv", expand = TRUE,
          dataDir = getOption("PublicOpinionDataDir", "../MediaFramingData/public_opinion_analysis/data")             )
 {
-    findData(file, dataDir)    
+    f = findData(file, dataDir, poll = TRUE)    
     
     ans = read.csv(f, stringsAsFactors = FALSE)
     if(expand) {
@@ -44,9 +47,10 @@ function(file = "ssm_polls.csv", expand = TRUE,
 
 
 findBadYears =
-function(x, vals = x[[var]], var = "Date", max.year = as.integer(format(Sys.Date(), "%Y")))
+function(x, vals = as.integer(format(x[[var]], "%Y")),
+         var = "Date", max.year = as.integer(format(Sys.Date(), "%Y")))
 {
-    vals > 2017  
+    vals > max.year  
 }
 
 readTopicData =
@@ -55,9 +59,9 @@ function(file = "ssm_with_metadata_2017_05_25.csv",
          dataDir = getOption("PublicOpinionDataDir", "../MediaFramingData/public_opinion_analysis/data")             
              )
 {
-    findData(file, dataDir)
+    f = findData(file, dataDir)
 
-    ans = read.csv(f, stringAsFactors = FALSE)
+    ans = read.csv(f, stringsAsFactors = FALSE)
     if(expand)
         ans = expandDateFrameTone(ans)
 

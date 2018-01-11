@@ -50,7 +50,7 @@ Matt Espe
 
 gc.articles = readTopicData("guncontrol")
 gc.poll = readPollData("guncontrol")
-plot_frames(gc.articles, gc.poll, "Gun Control")
+plot_frames(gc.articles, "Gun Control", gc.poll)
 
 
 data("GunViolenceEvents")

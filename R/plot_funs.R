@@ -71,15 +71,15 @@ plot_frames = function(df, main = deparse(subtitute(df)),
                    size = FALSE)
         # browser()
         b = ggplotly(b, dynamicTicks = TRUE)
-        subplot(a, b, nrows = 2, shareX = TRUE, heights = c(0.8, 0.2))
+        c = subplot(a, b, nrows = 2, shareX = TRUE, heights = c(0.8, 0.2))
     } else {
-        b = ggplotly(a, dynamicTicks = TRUE)
+        c = ggplotly(a, dynamicTicks = TRUE)
     }
 
     if(length(outfile))
-       saveWidget(b, file = outfile)
+       saveWidget(c, file = outfile)
 
-    b
+    c
 }
 
 plot_sources = function(df, main)
