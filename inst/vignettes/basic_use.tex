@@ -1,0 +1,327 @@
+\documentclass{article}
+\usepackage{Sweave}
+\title{Basic Use of the PublicOpinion package}
+\author{Matt Espe}
+\author{Duncan Temple Lang}
+
+\begin{document}
+
+The \texttt{PublicOpinion} package is a simple means to create plots of
+the Media Framing and Public Opinion data. It is not intended for wide
+release, but rather is a means to quickly share the plotting code in
+an easy manner.  
+
+
+\section{Installation}
+
+To install this package, you must first install a helper package that
+will allow installation directly from github.com:
+
+\begin{Schunk}
+\begin{Sinput}
+> install.packages("devtools")
+\end{Sinput}
+\end{Schunk}
+
+After that is installed, you can use this command to install
+PublicOpinion:
+
+\begin{Schunk}
+\begin{Sinput}
+> devtools::install_github("dsidavis/PublicOpinion")
+\end{Sinput}
+\end{Schunk}
+
+\section{Basic Use}
+
+First, you need to set an option in your R sessions that tells
+\texttt{PublicOpinion} where it can find the data. For my system, this
+is under \texttt{/home/matt/DSI/Projects/MediaFraming/MediaFramingData/public\_opinion\_analysis/data}:
+
+\begin{Schunk}
+\begin{Sinput}
+> options("PublicOpinionDataDir" = "/home/matt/DSI/Projects/MediaFraming/MediaFramingData/public_opinion_analysis/data")
+> 
+\end{Sinput}
+\end{Schunk}
+
+Now, the package will look in that directory for both the frame data,
+and the public opinion data.
+
+Let's start with loading the framing data:
+
+\begin{Schunk}
+\begin{Sinput}
+> gc.articles = readTopicData("guncontrol")
+\end{Sinput}
+\end{Schunk}
+
+Next we can read in the polling data:
+
+\begin{Schunk}
+\begin{Sinput}
+> gc.poll = readPollData("guncontrol")
+>   
+\end{Sinput}
+\end{Schunk}
+
+If you want to inspect these data, you can do any normal R operation,
+such as the look at the top
+
+\begin{Schunk}
+\begin{Sinput}
+> head(gc.articles)
+\end{Sinput}
+\begin{Soutput}
+                     X                               Source Year Month Day
+1     gun_control2.0-1       st. petersburg times (florida) 1993     9  11
+2    gun_control2.0-10       st. petersburg times (florida) 1990     8  12
+3   gun_control2.0-100       st. petersburg times (florida) 1989     4  12
+4  gun_control2.0-1000                      tampa bay times 2015    10   6
+5 gun_control2.0-10000 saint paul pioneer press (minnesota) 2003     3   4
+6 gun_control2.0-10001 saint paul pioneer press (minnesota) 2003     3   5
+  FullDate       Pro    Neutral      Anti    Implicit    Explicit          p0
+1 19930911 0.3765850 0.03153390 0.5918811 0.997109484 0.002890516 0.015121299
+2 19900812 0.3900203 0.22153580 0.3884439 0.945036527 0.054963473 0.072686610
+3 19890412 0.2067948 0.12846183 0.6647433 0.006643582 0.993356418 0.050369033
+4 20151006 0.1607494 0.28848165 0.5507689 0.565597594 0.434402406 0.031646329
+5 20030304 0.1297324 0.19520259 0.6750650 0.000403869 0.999596131 0.004020330
+6 20030305 0.5203225 0.02596554 0.4537120 0.997458976 0.002541024 0.002784092
+           p1          p2          p3          p4         p5          p6
+1 0.001582697 0.005007967 0.010848302 0.005742975 0.20330847 0.005892277
+2 0.004958407 0.016416121 0.006625803 0.018692917 0.15308554 0.291223956
+3 0.004421202 0.012126592 0.004687516 0.083277288 0.09991880 0.095063930
+4 0.002507589 0.032138670 0.006294560 0.031386212 0.08630694 0.112834988
+5 0.001355251 0.001893835 0.003192976 0.208887120 0.26117454 0.018543189
+6 0.001494049 0.007966544 0.002494683 0.062282075 0.27925600 0.442036118
+          p7          p8          p9        p10         p11       p12
+1 0.06862077 0.013275683 0.024631164 0.31732721 0.008255428 0.3059097
+2 0.02322126 0.122502365 0.025271502 0.07540371 0.040466313 0.1425726
+3 0.05285529 0.005833447 0.008297519 0.01177595 0.019789332 0.5441776
+4 0.17519680 0.017578242 0.008185524 0.02774530 0.014576633 0.3266062
+5 0.24527688 0.010437693 0.002301201 0.02780833 0.001795010 0.2055303
+6 0.06234269 0.032428417 0.019939510 0.03111334 0.015506736 0.0270568
+          p13 p14         b0          b1         b2          b3        b4
+1 0.014476091   0 0.09534372 0.013432666 0.79648460 0.093128970 0.7913465
+2 0.006872926   0 0.30122408 0.008883445 0.14954402 0.031667522 0.5623510
+3 0.007406525   0 0.46453566 0.025398182 0.07850468 0.010665262 0.3684863
+4 0.126996001   0 0.25260032 0.018740782 0.07888715 0.009776639 0.5248138
+5 0.007783310   0 0.09687112 0.009032261 0.10478219 0.030086206 0.4808646
+6 0.013298953   0 0.17331078 0.013810006 0.12704567 0.032171295 0.6495731
+         b5        b6        b7        b8         b9       b10       b11
+1 0.5171270 0.4457200 0.5400448 0.7222799 0.12404809 0.6694690 0.5912719
+2 0.8499649 0.8508944 0.5086303 0.3873874 0.05767053 0.2767994 0.7621879
+3 0.6248346 0.3423869 0.1263404 0.1795702 0.04639939 0.1956043 0.8426116
+4 0.8727312 0.9775070 0.9511680 0.6255532 0.22212572 0.3672997 0.2302903
+5 0.7749390 0.9241604 0.9606871 0.9163189 0.09362538 0.2614064 0.3967733
+6 0.7634245 0.8682073 0.2306799 0.6346391 0.11889750 0.1870933 0.5824187
+        b12         b13        b14       date Week_start            top_frame
+1 0.6528477 0.047111051 0.25593238 1993-09-11 1993-09-06    Cultural_identity
+2 0.6884087 0.043273605 0.14697261 1990-08-12 1990-08-06 Crime_and_punishment
+3 0.9874644 0.014702222 0.07266611 1989-04-12 1989-04-10            Political
+4 0.6620928 0.091531645 0.07380864 2015-10-06 2015-10-05            Political
+5 0.8719519 0.009731364 0.01331594 2003-03-04 2003-03-03  Policy_prescription
+6 0.9340095 0.030156235 0.08744357 2003-03-05 2003-03-03 Crime_and_punishment
+  tone
+1 Anti
+2  Pro
+3 Anti
+4 Anti
+5 Anti
+6  Pro
+\end{Soutput}
+\begin{Sinput}
+> 
+\end{Sinput}
+\end{Schunk}
+
+or a summary of the whole thing
+
+\begin{Schunk}
+\begin{Sinput}
+> summary(gc.articles)
+\end{Sinput}
+\begin{Soutput}
+      X                Source               Year          Month       
+ Length:18036       Length:18036       Min.   :1980   Min.   : 1.000  
+ Class :character   Class :character   1st Qu.:1997   1st Qu.: 3.000  
+ Mode  :character   Mode  :character   Median :2003   Median : 5.000  
+                                       Mean   :2004   Mean   : 5.978  
+                                       3rd Qu.:2013   3rd Qu.: 9.000  
+                                       Max.   :2016   Max.   :12.000  
+                                                                      
+      Day           FullDate             Pro              Neutral        
+ Min.   : 1.00   Min.   :19800605   Min.   :0.005227   Min.   :0.005764  
+ 1st Qu.: 9.00   1st Qu.:19971222   1st Qu.:0.139213   1st Qu.:0.060654  
+ Median :16.00   Median :20030820   Median :0.241396   Median :0.099050  
+ Mean   :15.72   Mean   :20039420   Mean   :0.274848   Mean   :0.121123  
+ 3rd Qu.:23.00   3rd Qu.:20130123   3rd Qu.:0.381292   3rd Qu.:0.157256  
+ Max.   :31.00   Max.   :20161228   Max.   :0.895319   Max.   :0.605638  
+                                                                         
+      Anti            Implicit            Explicit               p0           
+ Min.   :0.03192   Min.   :0.0000019   Min.   :0.0000031   Min.   :0.0000165  
+ 1st Qu.:0.47404   1st Qu.:0.0075660   1st Qu.:0.2160337   1st Qu.:0.0045387  
+ Median :0.62752   Median :0.0649388   Median :0.9350612   Median :0.0118430  
+ Mean   :0.60403   Mean   :0.3242364   Mean   :0.6757636   Mean   :0.0386125  
+ 3rd Qu.:0.75573   3rd Qu.:0.7839663   3rd Qu.:0.9924340   3rd Qu.:0.0325188  
+ Max.   :0.96040   Max.   :0.9999969   Max.   :0.9999981   Max.   :0.7611751  
+                                                                              
+       p1                  p2                  p3                 p4           
+ Min.   :0.0005971   Min.   :0.0000173   Min.   :0.000427   Min.   :0.0000171  
+ 1st Qu.:0.0015906   1st Qu.:0.0021289   1st Qu.:0.003042   1st Qu.:0.0061336  
+ Median :0.0024907   Median :0.0056549   Median :0.004987   Median :0.0215740  
+ Mean   :0.0033121   Mean   :0.0161342   Mean   :0.008755   Mean   :0.1102765  
+ 3rd Qu.:0.0044662   3rd Qu.:0.0154455   3rd Qu.:0.008750   3rd Qu.:0.0892340  
+ Max.   :0.0377715   Max.   :0.4693498   Max.   :0.522878   Max.   :0.9237077  
+                                                                               
+       p5                  p6                  p7           
+ Min.   :0.0000435   Min.   :0.0000404   Min.   :0.0001836  
+ 1st Qu.:0.0166946   1st Qu.:0.0068845   1st Qu.:0.0143195  
+ Median :0.0570462   Median :0.0261763   Median :0.0354231  
+ Mean   :0.1184691   Mean   :0.0894464   Mean   :0.0722942  
+ 3rd Qu.:0.1685702   3rd Qu.:0.0953749   3rd Qu.:0.0870810  
+ Max.   :0.8225640   Max.   :0.8300807   Max.   :0.8040760  
+                                                            
+       p8                  p9                 p10           
+ Min.   :0.0000856   Min.   :0.0001104   Min.   :0.0000147  
+ 1st Qu.:0.0034443   1st Qu.:0.0028101   1st Qu.:0.0057088  
+ Median :0.0084133   Median :0.0062774   Median :0.0210388  
+ Mean   :0.0261655   Mean   :0.0131116   Mean   :0.0612325  
+ 3rd Qu.:0.0226190   3rd Qu.:0.0143697   3rd Qu.:0.0712743  
+ Max.   :0.7149333   Max.   :0.4067498   Max.   :0.7368003  
+                                                            
+      p11                 p12                 p13                 p14   
+ Min.   :0.0000541   Min.   :0.0000209   Min.   :0.0004125   Min.   :0  
+ 1st Qu.:0.0073577   1st Qu.:0.0529955   1st Qu.:0.0106696   1st Qu.:0  
+ Median :0.0201418   Median :0.2544425   Median :0.0213994   Median :0  
+ Mean   :0.0576080   Mean   :0.3440418   Mean   :0.0405408   Mean   :0  
+ 3rd Qu.:0.0576105   3rd Qu.:0.6307143   3rd Qu.:0.0455390   3rd Qu.:0  
+ Max.   :0.8712895   Max.   :0.9761245   Max.   :0.8367899   Max.   :0  
+                                                                        
+       b0                  b1                 b2                 b3          
+ Min.   :0.0000801   Min.   :0.007056   Min.   :0.008505   Min.   :0.003072  
+ 1st Qu.:0.1496360   1st Qu.:0.009560   1st Qu.:0.059259   1st Qu.:0.016094  
+ Median :0.2395855   Median :0.013807   Median :0.088254   Median :0.024781  
+ Mean   :0.3225935   Mean   :0.015156   Mean   :0.114758   Mean   :0.037653  
+ 3rd Qu.:0.4284991   3rd Qu.:0.016926   3rd Qu.:0.136036   3rd Qu.:0.040222  
+ Max.   :0.9999999   Max.   :0.300227   Max.   :0.865029   Max.   :0.921443  
+                                                                             
+       b4                 b5                b6                b7          
+ Min.   :0.006904   Min.   :0.04991   Min.   :0.03331   Min.   :0.006173  
+ 1st Qu.:0.196739   1st Qu.:0.46972   1st Qu.:0.46457   1st Qu.:0.143800  
+ Median :0.446595   Median :0.62588   Median :0.68384   Median :0.308612  
+ Mean   :0.501777   Mean   :0.61390   Mean   :0.64872   Mean   :0.389112  
+ 3rd Qu.:0.830667   3rd Qu.:0.76847   3rd Qu.:0.85551   3rd Qu.:0.617876  
+ Max.   :0.999998   Max.   :0.99889   Max.   :0.99957   Max.   :0.998658  
+                                                                          
+       b8               b9                b10               b11          
+ Min.   :0.0203   Min.   :0.008068   Min.   :0.01185   Min.   :0.001205  
+ 1st Qu.:0.1894   1st Qu.:0.058457   1st Qu.:0.16242   1st Qu.:0.270052  
+ Median :0.3040   Median :0.084481   Median :0.26045   Median :0.413044  
+ Mean   :0.3564   Mean   :0.096432   Mean   :0.29870   Mean   :0.454344  
+ 3rd Qu.:0.4837   3rd Qu.:0.120522   3rd Qu.:0.39959   3rd Qu.:0.608833  
+ Max.   :0.9989   Max.   :0.747112   Max.   :0.98981   Max.   :0.999978  
+                                                                         
+      b12               b13                b14                date           
+ Min.   :0.00935   Min.   :0.000665   Min.   :0.005891   Min.   :1980-06-05  
+ 1st Qu.:0.55214   1st Qu.:0.015143   1st Qu.:0.028828   1st Qu.:1997-12-22  
+ Median :0.92715   Median :0.028349   Median :0.054072   Median :2003-08-19  
+ Mean   :0.75914   Mean   :0.052591   Mean   :0.070361   Mean   :2004-05-02  
+ 3rd Qu.:0.99512   3rd Qu.:0.055427   3rd Qu.:0.101495   3rd Qu.:2013-01-23  
+ Max.   :1.00000   Max.   :0.986563   Max.   :0.364086   Max.   :2016-12-28  
+                                                                             
+   Week_start                         top_frame         tone      
+ Min.   :1980-06-02   Political            :8401   Pro    : 3305  
+ 1st Qu.:1997-12-20   Legality_jurisdiction:2293   Neutral:  226  
+ Median :2003-08-18   Policy_prescription  :2137   Anti   :14505  
+ Mean   :2004-04-29   Crime_and_punishment :1724                  
+ 3rd Qu.:2013-01-21   Cultural_identity    : 930                  
+ Max.   :2016-12-26   Security_and_defense : 808                  
+                      (Other)              :1743                  
+\end{Soutput}
+\end{Schunk}
+
+
+\section{Plotting}
+
+The \texttt{PublicOpinion} package is primarily for creating interactive
+visualizations using the \texttt{plotly} package. The most basic plot is
+shows the frames over time,
+
+\begin{Schunk}
+\begin{Sinput}
+> plot_frames(df = gc.articles, main = "Gun Control")
+\end{Sinput}
+\end{Schunk}
+
+by default this will create the plot and open a browser window to view
+it in, but will not save the plot for later. To save, you need to pass
+in an outfile, which is simply the file path and name of the file you
+want to save into,
+
+\begin{Schunk}
+\begin{Sinput}
+> plot_frames(df = gc.articles, main = "Gun Control", outfile="guncontrol.html")
+\end{Sinput}
+\end{Schunk}
+
+Note that the browser will still open, but a new file is also \textit{created
+  in your current working directory} with the name you specified.
+
+\begin{Schunk}
+\begin{Sinput}
+> list.files(pattern = "html")
+\end{Sinput}
+\end{Schunk}
+
+If you want to include the polling data in the plot, just include it
+in the call to \texttt{plot\_frames},
+
+\begin{Schunk}
+\begin{Sinput}
+> plot_frames(df = gc.articles, main = "Gun Control", df_polls = gc.poll)
+\end{Sinput}
+\end{Schunk}
+
+\subsection{Adding events}
+
+Events can be adding to the plots by specifying the optional
+\texttt{events} and \texttt{eventHover} arguments. For illustrative
+purposes, the package includes data on gun violence events,
+
+\begin{Schunk}
+\begin{Sinput}
+> data(GunViolenceEvents)
+> plot_frames(gc.articles, "Gun Control", gc.poll, events = GunViolenceEvents$date)
+\end{Sinput}
+\end{Schunk}
+
+The event argument is the date of the event you want to add to the
+plot (Note: this has to be of class \texttt{Date}).
+
+\begin{Schunk}
+\begin{Sinput}
+> plot_frames(gc.articles, gc.poll, "Gun Control", events = GunViolenceEvents$date, eventHover= NA)
+> 
+\end{Sinput}
+\end{Schunk}
+
+ \texttt{eventHover} is text that you want to appear when you mouse over
+ that event. You can combine pieces of data together with the
+ \texttt{paste} command. Make sure you include \texttt{</br>} if you want
+ the items to be on their own lines in the hover.
+ 
+\begin{Schunk}
+\begin{Sinput}
+> plot_frames(df = gc.articles, main = "Gun Control", df_polls = gc.poll,
++             events = GunViolenceEvents$date,
++             eventHover = paste("</br> Location: ", GunViolenceEvents$location,
++                              "</br> Date: ", as.character(GunViolenceEvents$date),
++                              "</br> Num. Killed: ", GunViolenceEvents$numKilled,
++                              "</br> Num. Injured: ", GunViolenceEvents$numInjured))
+> 
+\end{Sinput}
+\end{Schunk}
+
+
+\end{document}

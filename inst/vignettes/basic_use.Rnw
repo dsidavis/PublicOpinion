@@ -1,0 +1,142 @@
+\documentclass{article}
+\usepackage{Sweave}
+\title{Basic Use of the PublicOpinion package}
+\author{Matt Espe}
+\author{Duncan Temple Lang}
+
+\begin{document}
+
+The \texttt{PublicOpinion} package is a simple means to create plots of
+the Media Framing and Public Opinion data. It is not intended for wide
+release, but rather is a means to quickly share the plotting code in
+an easy manner.  
+
+
+\section{Installation}
+
+To install this package, you must first install a helper package that
+will allow installation directly from github.com:
+
+<<eval = FALSE>>=
+install.packages("devtools")
+@
+
+After that is installed, you can use this command to install
+PublicOpinion:
+
+<<eval = FALSE>>=
+devtools::install_github("dsidavis/PublicOpinion")
+@ 
+
+\section{Basic Use}
+
+First, you need to set an option in your R sessions that tells
+\texttt{PublicOpinion} where it can find the data. For my system, this
+is under \texttt{/home/matt/DSI/Projects/MediaFraming/MediaFramingData/public\_opinion\_analysis/data}:
+
+<<>>=
+options("PublicOpinionDataDir" = "/home/matt/DSI/Projects/MediaFraming/MediaFramingData/public_opinion_analysis/data")
+
+@
+
+Now, the package will look in that directory for both the frame data,
+and the public opinion data.
+
+Let's start with loading the framing data:
+
+<<>>=
+gc.articles = readTopicData("guncontrol")
+@ 
+
+Next we can read in the polling data:
+
+<<>>=
+gc.poll = readPollData("guncontrol")
+  
+@ 
+
+If you want to inspect these data, you can do any normal R operation,
+such as the look at the top
+
+<<>>=
+head(gc.articles)
+
+@
+
+or a summary of the whole thing
+
+<<>>=
+summary(gc.articles)
+@ 
+
+
+\section{Plotting}
+
+The \texttt{PublicOpinion} package is primarily for creating interactive
+visualizations using the \texttt{plotly} package. The most basic plot is
+shows the frames over time,
+
+<<eval = FALSE>>=
+plot_frames(df = gc.articles, main = "Gun Control")
+@
+
+by default this will create the plot and open a browser window to view
+it in, but will not save the plot for later. To save, you need to pass
+in an outfile, which is simply the file path and name of the file you
+want to save into,
+
+<<eval = FALSE>>=
+plot_frames(df = gc.articles, main = "Gun Control", outfile="guncontrol.html")
+@ 
+
+Note that the browser will still open, but a new file is also \textit{created
+  in your current working directory} with the name you specified.
+
+<<eval = FALSE>>=
+list.files(pattern = "html")
+@ 
+
+If you want to include the polling data in the plot, just include it
+in the call to \texttt{plot\_frames},
+
+<<eval = FALSE >>=
+plot_frames(df = gc.articles, main = "Gun Control", df_polls = gc.poll)
+@ 
+
+\subsection{Adding events}
+
+Events can be adding to the plots by specifying the optional
+\texttt{events} and \texttt{eventHover} arguments. For illustrative
+purposes, the package includes data on gun violence events,
+
+<<eval = FALSE>>=
+data(GunViolenceEvents)
+
+plot_frames(gc.articles, "Gun Control", gc.poll, events = GunViolenceEvents$date)
+@
+
+The event argument is the date of the event you want to add to the
+plot (Note: this has to be of class \texttt{Date}).
+
+<<eval = FALSE>>=
+plot_frames(gc.articles, gc.poll, "Gun Control", events = GunViolenceEvents$date, eventHover= NA)
+
+@ 
+
+ \texttt{eventHover} is text that you want to appear when you mouse over
+ that event. You can combine pieces of data together with the
+ \texttt{paste} command. Make sure you include \texttt{</br>} if you want
+ the items to be on their own lines in the hover.
+ 
+<<eval = FALSE>>=
+plot_frames(df = gc.articles, main = "Gun Control", df_polls = gc.poll,
+            events = GunViolenceEvents$date,
+            eventHover = paste("</br> Location: ", GunViolenceEvents$location,
+                             "</br> Date: ", as.character(GunViolenceEvents$date),
+                             "</br> Num. Killed: ", GunViolenceEvents$numKilled,
+                             "</br> Num. Injured: ", GunViolenceEvents$numInjured))
+
+@ 
+
+
+\end{document}
