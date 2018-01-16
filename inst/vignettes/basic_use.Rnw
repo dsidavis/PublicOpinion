@@ -1,5 +1,6 @@
 \documentclass{article}
 \usepackage{Sweave}
+\usepackage[margin=1in]{geometry}
 \title{Basic Use of the PublicOpinion package}
 \author{Matt Espe}
 \author{Duncan Temple Lang}
@@ -35,8 +36,8 @@ First, you need to set an option in your R sessions that tells
 is under \texttt{/home/matt/DSI/Projects/MediaFraming/MediaFramingData/public\_opinion\_analysis/data}:
 
 <<>>=
+library(PublicOpinion)
 options("PublicOpinionDataDir" = "/home/matt/DSI/Projects/MediaFraming/MediaFramingData/public_opinion_analysis/data")
-
 @
 
 Now, the package will look in that directory for both the frame data,
@@ -52,23 +53,30 @@ Next we can read in the polling data:
 
 <<>>=
 gc.poll = readPollData("guncontrol")
-  
 @ 
 
 If you want to inspect these data, you can do any normal R operation,
 such as the look at the top
 
 <<>>=
-head(gc.articles)
+head(gc.poll)
 
 @
 
 or a summary of the whole thing
 
 <<>>=
-summary(gc.articles)
+summary(gc.poll)
 @ 
 
+or even subsetting prior to plotting
+
+<<>>=
+gc.pew.poll = subset(gc.poll, Varname == "PEWGUN")
+
+nrow(gc.poll)
+nrow(gc.pew.poll)
+@ 
 
 \section{Plotting}
 
@@ -112,22 +120,23 @@ purposes, the package includes data on gun violence events,
 <<eval = FALSE>>=
 data(GunViolenceEvents)
 
-plot_frames(gc.articles, "Gun Control", gc.poll, events = GunViolenceEvents$date)
+plot_frames(df = gc.articles, main = "Gun Control", df_polls = gc.poll, events = GunViolenceEvents$date)
 @
 
 The event argument is the date of the event you want to add to the
 plot (Note: this has to be of class \texttt{Date}).
 
 <<eval = FALSE>>=
-plot_frames(gc.articles, gc.poll, "Gun Control", events = GunViolenceEvents$date, eventHover= NA)
+plot_frames(df = gc.articles, main = "Gun Control",  df_poll = gc.poll,
+            events = GunViolenceEvents$date, eventHover= NA)
 
 @ 
 
- \texttt{eventHover} is text that you want to appear when you mouse over
- that event. You can combine pieces of data together with the
- \texttt{paste} command. Make sure you include \texttt{</br>} if you want
- the items to be on their own lines in the hover.
- 
+\texttt{eventHover} is text that you want to appear when you mouse over
+that event. You can combine pieces of data together with the
+\texttt{paste} command. Make sure you include \texttt{</br>} if you want
+the items to be on their own lines in the hover.
+
 <<eval = FALSE>>=
 plot_frames(df = gc.articles, main = "Gun Control", df_polls = gc.poll,
             events = GunViolenceEvents$date,
@@ -137,6 +146,7 @@ plot_frames(df = gc.articles, main = "Gun Control", df_polls = gc.poll,
                              "</br> Num. Injured: ", GunViolenceEvents$numInjured))
 
 @ 
+
 
 
 \end{document}

@@ -26,7 +26,7 @@ byInterval = function(df, interval)
     byX
 }
 
-plot_frames = function(df, main = deparse(subtitute(df)),
+plot_frames = function(df, main = deparse(substitute(df)),
                        outfile = character(),
                        df_polls = NULL, 
                        events = NULL, eventHover = NULL,
