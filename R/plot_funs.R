@@ -1,7 +1,5 @@
 # Functions to aid plotting the Media Framing dataset
 
-library(ggplot2)
-
 
 getSurges = function(df, threshold)
 {
@@ -82,7 +80,7 @@ plot_frames = function(df, main = deparse(substitute(df)),
     c
 }
 
-plot_sources = function(df, main)
+plot_sources = function(df, main = deparse(substitute(df)))
 {
     # bySource =  aggregate(Pro ~ paste(Month, Year) + Source, data = df, mean)
     # bySource$start_date = as.Date(paste("1", bySource$'paste(Month, Year)'),

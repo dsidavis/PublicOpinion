@@ -69,16 +69,58 @@ or a summary of the whole thing
 summary(gc.poll)
 @ 
 
-or even subsetting prior to plotting
+
+
+\subsection{Manipulating data}
+
+If you want to plot only a subset of the polling or framing data, the
+data should be reduced/subset prior to handing them into the plotting
+functions.
+
+Lets say you want to plot only the Pew Gun poll with only the
+Washington Post articles,
+
 
 <<>>=
 gc.pew.poll = subset(gc.poll, Varname == "PEWGUN")
 
 nrow(gc.poll)
 nrow(gc.pew.poll)
+@
+
+First, we need to find out what the Washington Post source name is in
+these data,
+
+<<>>=
+sort(unique(gc.articles$Source))
+@
+
+You can see we have an issue - there are lots of different labels that
+all mean Washington Post. Before we can plot, we need to reduce these
+all to the same label. We can do this one at a time,
+
+<<>>=
+gc.articles$Source[gc.articles$Source == "washingtonpost.com"] = "washington post"
+@
+
+but it is more efficient to use regular expressions to do them all at
+once,
+
+<<>>=
+isWapo = grep("^washington", gc.articles$Source)
+gc.articles$Source[isWapo] = "washington post"
 @ 
 
+then you can subset to only these,
+
+<<>>=
+gc.wapo = subset(gc.poll, Source == "washington post")
+@ 
+
+
 \section{Plotting}
+
+\subsection{Plotting Frames}
 
 The \texttt{PublicOpinion} package is primarily for creating interactive
 visualizations using the \texttt{plotly} package. The most basic plot is
@@ -147,6 +189,14 @@ plot_frames(df = gc.articles, main = "Gun Control", df_polls = gc.poll,
 
 @ 
 
+
+\section{Plotting sources}
+
+There is code to plot the sources (newpapers) over time.
+
+<<eval = FALSE>>=
+plot_sources(df = gc.poll, main = "Gun Control Sources")
+@ 
 
 
 \end{document}
