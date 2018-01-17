@@ -114,7 +114,7 @@ gc.articles$Source[isWapo] = "washington post"
 then you can subset to only these,
 
 <<>>=
-gc.wapo = subset(gc.poll, Source == "washington post")
+gc.wapo = subset(gc.articles, Source == "washington post")
 @ 
 
 
@@ -192,7 +192,7 @@ plot_frames(df = gc.articles, main = "Gun Control", df_polls = gc.poll,
 
 \section{Plotting sources}
 
-There is code to plot the sources (newpapers) over time.
+There is code to plot the sources (new papers) over time.
 
 <<eval = FALSE>>=
 plot_sources(df = gc.poll, main = "Gun Control Sources")
