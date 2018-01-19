@@ -46,7 +46,7 @@ Matt Espe
 }
 \examples{
 #
-if(!is.null(options("PublicOpinionDataDir"))){
+if(!is.null(getOption("PublicOpinionDataDir"))){
 gc.articles = readTopicData("guncontrol")
 gc.poll = readPollData("guncontrol")
 plot_frames(df = gc.articles, main = "Gun Control", df_polls = gc.poll)
@@ -83,7 +83,8 @@ ss.articles = readTopicData("ssm")
 plot_frames(df = ss.articles, main = "Same Sex Marriage",
             events = example_data$date, eventHover = example_data$Description)
 }
-}
+} else {
+stop("Please set the 'PublicOpinionDataDir' option before running example")
 }
 \keyword{}
 \keyword{}
