@@ -1,4 +1,5 @@
 + Add the events example data  to a data/ director under GunViolenceEvents
 + Finish examples in plot_frames.Rd
 + Vignette if necessary.
-+ 
++ Show using options(PublicOpinionDataDir = )
++ test functions, i.e. finding the data - findData().
