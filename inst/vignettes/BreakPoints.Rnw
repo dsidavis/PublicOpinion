@@ -1,7 +1,7 @@
 \documentclass{article}
 \usepackage{Sweave}
 \usepackage[margin=1in]{geometry}
-\title{Basic Use of the PublicOpinion package}
+\title{Aggregating and finding breakpoints in the Media Framing data}
 \author{Matt Espe and Duncan Temple Lang}
 
 
