@@ -16,3 +16,5 @@ export(findBadYears)
 export(expandDateFrameTone,
        computeFrameNames)
 
+# For metrics
+export(aggregateArticles, getChangePoints, isBlockSequenceInteresting)
