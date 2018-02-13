@@ -54,7 +54,7 @@ articleAggFun = function(x)
                avgPro = mean(x$Pro[x$tone == "Pro"], na.rm = TRUE),
                nPro = sum(x$tone == "Pro"),
                avgNeut = mean(x$Neutral[x$tone == "Neutral"], na.rm = TRUE),
-               nPro = sum(x$tone == "Neutral"),
+               nNeut = sum(x$tone == "Neutral"),
                avgAnti = mean(x$Anti[x$tone == "Anti"], na.rm = TRUE),
                nAnti = sum(x$tone == "Anti"),
                nSource = length(unique(x$Source)),
