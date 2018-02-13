@@ -140,7 +140,23 @@ If we want to know when the entropy switches around the mean,
 <<>>=
 cp.ent = getChangePoints(ssm.ent, changeValue = mean(ssm.ent$entropy), var = "entropy")
 
-isBlockSequenceInteresting(cp.ent, totalBlockRatio, var = "entropy")
+ofInterest = isBlockSequenceInteresting(cp.ent, totalBlockRatio, var = "entropy")
+ofInterest
 @ 
 
+\section{Plotting ``important'' change points}
+
+To finish off the example, lets say we only wanted to look at the places where the ``ofInterest'' score is greater than or equal to 1.5,
+
+<<>>=
+i = ofInterest >= 1.5 & !is.inf(ofInterest)
+cp.ent.dates = getChangePointStart(cp.ent)
+cp.ent.dates[i]
+@ 
+
+And we can visualize these just as before,
+
+<<eval = FALSE>>=
+plot_frames(ssm, events = cp.ent.dates[i][-14], eventHover = paste("</br>Ent. change: ", ofInterest[i]))
+@ 
 \end{document}
