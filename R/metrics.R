@@ -82,9 +82,9 @@ blockRatio =
     # But the rows in b1 correspond to all of the time units before the change point
     #   (NOT TO THE TIME INTERVAL FOR AGGREGATION)
     # and after the change point in b2.
-function(b1, b2, lag = 0, stat = median)
+function(b1, b2, lag = 0, stat = median, ...)
 {
-   stat(b1[nrow(b1)]/stat(b2$val[1])
+   stat(b1[nrow(b1)], ...)/stat(b2$val[1], ...)
 }
 
 #########
