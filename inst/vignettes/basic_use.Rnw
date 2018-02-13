@@ -199,4 +199,60 @@ plot_sources(df = gc.poll, main = "Gun Control Sources")
 @ 
 
 
+\section{Detecting change points}
+
+One of the metrics that we are interested in is when the tone of the
+media stories shifts from pro to anti, etc. To conduct a very basic
+change point detection, you first need to create a time-series of the
+data, aggregated by the interval we are interested in, e.g. monthly
+averages. Assuming we want the average tone across all frames, we set
+\code{sepFrames = FALSE}:
+
+<<>>=
+gc.monthly = aggregateArticles(gc.articles, "monthly", sepFrames = FALSE)
+@ 
+
+The \code{aggregateArticles()} function outputs a new dataframe, with
+some summary statistics for computed on the input data over the time
+interval specified:
+
+<<>>=
+colnames(gc.monthly)
+@
+
+Now, if we define a change-point as being when the average ``Pro''
+score crosses the 50\% threshold, we can detect all the places where
+this happens with \code{getChangePoints()},
+
+<<>>=
+cp = getChangePoints(tt, changeValue=0.5, var = "avgPro")
+@
+
+\code{getChangePoints()} splits the input dataset into a list, with
+each element of the list being a part of the data corresponding to one
+side of a change-point. To visualize this, we first need to find the
+dates when these point occur,
+
+<<>>=
+cp.dates = getChangePointStart(cp)
+@
+
+And then we can add these to a plot as an event,
+
+<<>>=
+plot_frames(df = gc.articles, interval = "month",
+            main = "Gun Control", events = cp.dates,
+            eventHover = cp.dates)
+
+@
+
+Well, this does not seem quite right - perhaps the average ``Pro''
+score is not the right variable. Instead, it might make sense to look
+at the volumn of ``Pro'' articles vs. the ``Anti'' articles. We can
+compute this in R as a new column in the aggregated data,
+
+<<>>=
+gc.monthly
+@ 
+
 \end{document}
