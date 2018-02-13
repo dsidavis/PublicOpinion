@@ -86,5 +86,6 @@ plot_frames(df = ss.articles, main = "Same Sex Marriage",
 } else {
 stop("Please set the 'PublicOpinionDataDir' option before running example")
 }
-\keyword{}
-\keyword{}
+}
+%\keyword{}
+%\keyword{}

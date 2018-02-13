@@ -1,0 +1,29 @@
+
+
+1. **Define a time series**. This can be any way to measure a concept interest over time grouping articles within the same time interval, i.e. day for raw, weekly, monthly.
+1. **Find the change points** where the time series crosses from, e.g, Pro to Con, stable to unstable, high variance to low variance, number of articles greater to less than. These are the metrics we compute in step 1. Here we compute the changes
+1. **Find which change points are interesting** i.e. of significance, i.e. the change exceeds a threshold.
+
+
+
+# Define a Time Series.
+
+We've been dealing with number of Pro articles.
+Of course, we could compute either
+1. the ratio of the number of pro articles to the number of con articles, or
+1. the difference of these two numbers, or
+1. variability/uniformity of the top frame of the articles, or
+1. the difference between the number of articles in the top frame versus the second top frame.
+
+The functions in ts_utils.R compute these for us
+
+articleAggrFun computes lots of thins include the unique top frame for the articles,
+number of pro, con, neutral, number of sources.
+
+proConRatio
+
+
+proConDiff
+
+
+
