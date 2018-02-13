@@ -2,10 +2,14 @@
 \usepackage{Sweave}
 \usepackage[margin=1in]{geometry}
 \title{Basic Use of the PublicOpinion package}
-\author{Matt Espe}
-\author{Duncan Temple Lang}
+\author{Matt Espe and Duncan Temple Lang}
+
 
 \begin{document}
+\maketitle
+
+Rather than visually inspecting plots as a means to find ``interesting areas'' in the time series of the media framing data, we would prefer to automatically flag these areas.
+To enable this, we can use some basic functions in the PublicOpinion package.
 
 \begin{enumerate}
 \item \bf{Define a time series.} This can be any way to measure a concept interest over time grouping articles within the same time interval, i.e. day for raw, weekly, monthly.
@@ -26,7 +30,7 @@ Of course, we could compute either
 \item the difference between the number of articles in the top frame versus the second top frame.
 \end{enumerate}
 
-The functions in \code{ts\_utils.R} compute these for us
+The functions in \texttt{ts\_utils.R} compute these for us
 
 articleAggrFun computes lots of thins include the unique top frame for the articles,
 number of pro, con, neutral, number of sources.
@@ -39,13 +43,16 @@ proConDiff
 \section{Define a time-series}
 
 To create a time series from the raw data, we need to aggregate the since there are multiple observations per unit time.
-The function \code{aggregateArticles} takes a ``frames'' data frame (read into R by \code{readTopicData()},
+The function \texttt{aggregateArticles} takes a ``frames'' data frame (read into R by \texttt{readTopicData()},
 an aggregation interval (either day, week, month or year), whether to combine all the frames together or keep them separate,
 and an optional function. By default, a function that calculates the average probability and
 number of obs in the ``Pro'', ``Neutral'' or ``Anti'' columns is used.
 
 <<>>=
+library(PublicOpinion)
+options(PublicOpinionDataDir = "/home/matt/DSI/Projects/MediaFraming/MediaFramingData/public_opinion_analysis/data/")
 ssm = readTopicData("ssm")
+
 ssm.monthly = aggregateArticles(ssm, "month", sepFrames = FALSE)
 head(ssm.monthly)
 @ 
@@ -57,13 +64,15 @@ ssm.ent = aggregateArticles(ssm, "month", sepFrames = FALSE, fun = topFrameDomin
 head(ssm.ent)
 @ 
 
-More examples of possible functions that can be used can be found in the script ts\_utils.R
+More examples of possible functions that can be used can be found in the script ts\_utils.R.
+\bf{Importantly, these functions can be provided by us, allowing us to provide an aggregation function
+that calculates whatever we would like.}
 
 \section{Detecting change points}
 
 One of the metrics that we are interested in is when the tone of the
-media stories shifts from pro to anti, etc. Assuming we used the default function in \code{aggregateArticles},
-\code{aggregateArticles()} function outputs a new dataframe, with
+media stories shifts from pro to anti, etc. Assuming we used the default function in \texttt{aggregateArticles},
+\texttt{aggregateArticles()} function outputs a new dataframe, with
 some summary statistics for computed on the input data over the time
 interval specified:
 
@@ -73,13 +82,13 @@ colnames(ssm.monthly)
 
 Now, if we define a change-point as being when the average ``Pro''
 score crosses the 50\% threshold, we can detect all the places where
-this happens with \code{getChangePoints()},
+this happens with \texttt{getChangePoints()},
 
 <<>>=
 cp = getChangePoints(ssm.monthly, changeValue=0.5, var = "avgPro")
 @
 
-\code{getChangePoints()} splits the input dataset into a list, with
+\texttt{getChangePoints()} splits the input dataset into a list, with
 each element of the list being a part of the data corresponding to one
 side of a change-point. To visualize this, we first need to find the
 dates when these point occur,
@@ -118,7 +127,7 @@ cp.dates = getChangePointStart(cp)
 \section{Comparing two intervals}
 
 Now, if we want to compare two blocks to see just how big the differences are between then, we can use the function
-\code{isBlockInteresting()}. It takes a list of ``blocks'' created by \code{getChangePoints()} and a function to compare
+\texttt{isBlockInteresting()}. It takes a list of ``blocks'' created by \texttt{getChangePoints()} and a function to compare
 the blocks. Using the entropy scores,
 
 <<>>=

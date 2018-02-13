@@ -17,4 +17,7 @@ export(expandDateFrameTone,
        computeFrameNames)
 
 # For metrics
-export(aggregateArticles, getChangePoints, isBlockSequenceInteresting)
+export(aggregateArticles, getChangePoints, getChangePointStart,
+       totalBlockRatio, blockRatio, isBlockSequenceInteresting)
+
+export(topFrameDominanceEntropy, proConRatio, proConDiff, topFrameDominance)
