@@ -26,24 +26,30 @@ byInterval = function(df, interval)
 
 aggregateArticles = function(df, interval = "week")
     #
-    #
+    # Basic function to aggregate the framing data
+    # currently missing the ability to separate out the frames
     # 
 {
     if(!interval %in% c("day", "week", "month", "year"))
         stop("Interval must be one of: 'day', 'week', 'month', or 'year'")
 
-    ans = by(df, cut(df$date, interval), function(x) {
-        data.frame(startDate = min(x$date),
-                   endDate = max(x$date),
-                   avgPro = mean(x$Pro[x$tone == "Pro"], na.rm = TRUE),
-                   nPro = sum(x$tone == "Pro"),
-                   avgNeut = mean(x$Neutral[x$tone == "Neutral"], na.rm = TRUE),
-                   nPro = sum(x$tone == "Neutral"),
-                   avgAnti = mean(x$Anti[x$tone == "Anti"], na.rm = TRUE),
-                   nAnti = sum(x$tone == "Anti"),
-                   nSource = length(unique(x$Source)),
-                   nTotal = nrow(x))
+    ans = by(df, cut(df$date, interval), function(dd) {
+        do.call(rbind,
+                by(dd, dd$top_frame, function(x) {
+                    data.frame(startDate = min(x$date),
+                               endDate = max(x$date),
+                               frame = unique(x$top_frame),
+                               avgPro = mean(x$Pro[x$tone == "Pro"], na.rm = TRUE),
+                               nPro = sum(x$tone == "Pro"),
+                               avgNeut = mean(x$Neutral[x$tone == "Neutral"], na.rm = TRUE),
+                               nPro = sum(x$tone == "Neutral"),
+                               avgAnti = mean(x$Anti[x$tone == "Anti"], na.rm = TRUE),
+                               nAnti = sum(x$tone == "Anti"),
+                               nSource = length(unique(x$Source)),
+                               nTotal = nrow(x))
+                }))
     })
+
     do.call(rbind, ans)
 }
 
