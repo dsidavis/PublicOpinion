@@ -61,3 +61,8 @@ articleAggFun = function(x)
                nTotal = nrow(x))
 }
 
+getChangePointStart = function(cp)
+{
+    # Hack to avoid converting to numeric and then back to date
+    do.call(c, lapply(cp, function(x) min(x$startDate)))
+}

@@ -5,21 +5,21 @@ plot_frames = function(df, main = deparse(substitute(df)),
                        df_polls = NULL, 
                        events = NULL, eventHover = NULL,
                        frame_names = computeFrameNames(),
-                       interval = df$Week_start,
+                       interval = "week",
                        polls = !missing(df_polls), span = 0.1)
 {
-    byWeek = byInterval(df, interval)
-
-    pro = byWeek$tone == "Pro"
-    con = byWeek$tone == "Anti"
+    df.agg = aggregateArticles(df, interval)
+    df.agg$nAnti = df.agg$nAnti * -1
+    # pro = byWeek$tone == "Pro"
+    # con = byWeek$tone == "Anti"
     
-    a = ggplot(byWeek[pro,],
-               aes(x = interval, y = Count, color = top_frame)) +
+    a = ggplot(df.agg,
+               aes(x = startDate, y = nPro, color = frame)) +
         geom_line() +
-        geom_line(data = byWeek[con,])+ 
+        geom_line(aes(x = startDate, y = nAnti))+ 
         theme_bw() +
         xlab("Date (week start)") +
-        xlim(as.Date(c(min(byWeek$interval), "2017-01-01"))) + 
+        xlim(as.Date(c(min(df.agg$startDate), "2017-01-01"))) + 
         scale_y_continuous(sec.axis = sec_axis(~., name = "Public polling"))+
         ggtitle(main) +
         theme_bw()
@@ -27,8 +27,8 @@ plot_frames = function(df, main = deparse(substitute(df)),
     a = ggplotly(a, dynamicTicks = TRUE)
     
     if(!is.null(events)){
-        a = a %>% add_segments(x = ~events, y = max(byWeek$Count),
-                               xend = ~events, yend = min(byWeek$Count),
+        a = a %>% add_segments(x = ~events, y = max(df.agg$nPro),
+                               xend = ~events, yend = min(df.agg$nAnti),
                                inherit = FALSE, name = "Events",
                                hoverinfo = "text", text = ~ eventHover,
                                line = list(dash = "dot", width = 1,
