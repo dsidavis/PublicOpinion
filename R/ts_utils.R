@@ -1,29 +1,5 @@
 
 
-getSurges = function(df, threshold)
-    # Not used - maybe move to metrics.R
-{
-    by(df, list(df$top_frame, df$tone), function(x, threshold){
-        x = x[order(x$interval),]
-        d = abs(x$Count) >= threshold
-        # browser()
-        x[d,]
-        }, threshold = threshold)
-}
-
-
-byInterval = function(df, interval)
-    # Interval is just a vector of the time you want to collapse by
-{
-    byX = aggregate(Pro ~ interval + tone + top_frame, data = df, length)
-    byX = byX[order(byX$interval),]
-    
-    colnames(byX)[4] = "Count"
-    
-    byX$Count[byX$tone == "Anti"] = byX$Count[byX$tone == "Anti"] * -1
-    byX
-}
-
 aggregateArticles = function(df, interval = "week", sepFrames = TRUE, fun = articleAggFun)
     #
     # Basic function to aggregate the framing data
@@ -46,17 +22,17 @@ aggregateArticles = function(df, interval = "week", sepFrames = TRUE, fun = arti
     do.call(rbind, ans)
 }
 
-articleAggFun = function(x)
+articleAggFun = function(x, stat = mean, ...)
 {
     data.frame(startDate = min(x$date),
                endDate = max(x$date),
                nTotal = nrow(x),               
                frame = paste(unique(x$top_frame), collapse = ";"),
-               avgPro = mean(x$Pro[x$tone == "Pro"], na.rm = TRUE),
+               avgPro = stat(x$Pro[x$tone == "Pro"], ...),
                nPro = sum(x$tone == "Pro"),
-               avgNeut = mean(x$Neutral[x$tone == "Neutral"], na.rm = TRUE),
+               avgNeut = stat(x$Neutral[x$tone == "Neutral"], ...),
                nNeut = sum(x$tone == "Neutral"),
-               avgAnti = mean(x$Anti[x$tone == "Anti"], na.rm = TRUE),
+               avgAnti = stat(x$Anti[x$tone == "Anti"], ...),
                nAnti = sum(x$tone == "Anti"),
                nSource = length(unique(x$Source))
                )
@@ -121,4 +97,30 @@ getChangePointStart = function(cp)
 {
     # Hack to avoid converting to numeric and then back to date
     do.call(c, lapply(cp, function(x) min(x$startDate)))
+}
+
+if(FALSE){
+getSurges = function(df, threshold)
+    # Not used - maybe move to metrics.R
+{
+    by(df, list(df$top_frame, df$tone), function(x, threshold){
+        x = x[order(x$interval),]
+        d = abs(x$Count) >= threshold
+        # browser()
+        x[d,]
+        }, threshold = threshold)
+}
+
+
+byInterval = function(df, interval)
+    # Interval is just a vector of the time you want to collapse by
+{
+    byX = aggregate(Pro ~ interval + tone + top_frame, data = df, length)
+    byX = byX[order(byX$interval),]
+    
+    colnames(byX)[4] = "Count"
+    
+    byX$Count[byX$tone == "Anti"] = byX$Count[byX$tone == "Anti"] * -1
+    byX
+}
 }

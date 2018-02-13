@@ -10,8 +10,6 @@ plot_frames = function(df, main = deparse(substitute(df)),
 {
     df.agg = aggregateArticles(df, interval)
     df.agg$nAnti = df.agg$nAnti * -1
-    # pro = byWeek$tone == "Pro"
-    # con = byWeek$tone == "Anti"
     
     a = ggplot(df.agg,
                aes(x = startDate, y = nPro, color = frame)) +
