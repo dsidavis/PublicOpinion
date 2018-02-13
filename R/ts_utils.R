@@ -84,8 +84,8 @@ function(frame)
 topFrameDominanceEntropy =
     function(x)
 {
-    p = table(x$top_frame)/nrow(x)
-
+    p = table(droplevels(x$top_frame))/nrow(x)
+    
     data.frame(startDate = min(x$date),
                endDate = max(x$date),
                nTotal = nrow(x),

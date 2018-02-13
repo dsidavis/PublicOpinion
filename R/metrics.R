@@ -57,11 +57,11 @@ function(ts, changeValue = 0, var = 1)
 
 
 isBlockSequenceInteresting =
-function(blocks, fun)
+function(blocks, fun, ...)
 {
     pos = cbind()
     mapply(fun,
-            blocks[1:(length(blocks)-1)], blocks[2:length(blocks)], MoreArgs = list(blocks))
+            blocks[1:(length(blocks)-1)], blocks[2:length(blocks)], MoreArgs = list(blocks, ...))
 }
 
 
@@ -72,9 +72,9 @@ totalBlockRatio =
     # But the rows in b1 correspond to all of the time units before the change point
     #   (NOT TO THE TIME INTERVAL FOR AGGREGATION)
     # and after the change point in b2.
-function(b1, b2, lag = 0, stat = median)
+function(b1, b2, lag = 0, stat = median, var = "val")
 {
-   stat(b1$val)/stat(b2$val[1])
+   stat(b1[[var]])/stat(b2[[var]][1])
 }
 
 blockRatio =
