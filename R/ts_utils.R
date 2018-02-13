@@ -24,33 +24,40 @@ byInterval = function(df, interval)
     byX
 }
 
-aggregateArticles = function(df, interval = "week")
+aggregateArticles = function(df, interval = "week", sepFrames = TRUE)
     #
     # Basic function to aggregate the framing data
-    # currently missing the ability to separate out the frames
+    # sepFrames is whether the results should be separated by individual frames
+    #   or if the data from different frames should be aggregated together
     # 
 {
     if(!interval %in% c("day", "week", "month", "year"))
         stop("Interval must be one of: 'day', 'week', 'month', or 'year'")
 
-    ans = by(df, cut(df$date, interval), function(dd) {
-        do.call(rbind,
-                by(dd, dd$top_frame, function(x) {
-                    data.frame(startDate = min(x$date),
-                               endDate = max(x$date),
-                               frame = unique(x$top_frame),
-                               avgPro = mean(x$Pro[x$tone == "Pro"], na.rm = TRUE),
-                               nPro = sum(x$tone == "Pro"),
-                               avgNeut = mean(x$Neutral[x$tone == "Neutral"], na.rm = TRUE),
-                               nPro = sum(x$tone == "Neutral"),
-                               avgAnti = mean(x$Anti[x$tone == "Anti"], na.rm = TRUE),
-                               nAnti = sum(x$tone == "Anti"),
-                               nSource = length(unique(x$Source)),
-                               nTotal = nrow(x))
-                }))
-    })
+    ans = by(df, cut(df$date, interval), function(dd, sep) {
+        if(sep){
+            do.call(rbind,
+                    by(dd, dd$top_frame, articleAggFun))
+        }else{
+            articleAggFun(dd)
+        }
+    }, sep = sepFrames)
 
     do.call(rbind, ans)
 }
 
+articleAggFun = function(x)
+{
+    data.frame(startDate = min(x$date),
+               endDate = max(x$date),
+               frame = paste(unique(x$top_frame), collapse = ";"),
+               avgPro = mean(x$Pro[x$tone == "Pro"], na.rm = TRUE),
+               nPro = sum(x$tone == "Pro"),
+               avgNeut = mean(x$Neutral[x$tone == "Neutral"], na.rm = TRUE),
+               nPro = sum(x$tone == "Neutral"),
+               avgAnti = mean(x$Anti[x$tone == "Anti"], na.rm = TRUE),
+               nAnti = sum(x$tone == "Anti"),
+               nSource = length(unique(x$Source)),
+               nTotal = nrow(x))
+}
 
