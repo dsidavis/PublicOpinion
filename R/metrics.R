@@ -46,8 +46,6 @@ if(FALSE) {
 }
 
 
-
-
 getChangePoints =
 function(ts, changeValue = 0, var = 1)
 {
@@ -58,12 +56,76 @@ function(ts, changeValue = 0, var = 1)
 }
 
 
+isBlockSequenceInteresting =
+function(blocks, fun)
+{
+    pos = cbind()
+    mapply(fun,
+            blocks[1:(length(blocks)-1)], blocks[2:length(blocks)], MoreArgs = list(blocks))
+}
+
+
+#############
+
+totalBlockRatio =
+    # b1 b2 are data frames coming from the ts_utils computation defining a time series.
+    # But the rows in b1 correspond to all of the time units before the change point
+    #   (NOT TO THE TIME INTERVAL FOR AGGREGATION)
+    # and after the change point in b2.
+function(b1, b2, lag = 0, stat = median)
+{
+   stat(b1$val)/stat(b2$val[1])
+}
+
+blockRatio =
+    # b1 b2 are data frames coming from the ts_utils computation defining a time series.
+    # But the rows in b1 correspond to all of the time units before the change point
+    #   (NOT TO THE TIME INTERVAL FOR AGGREGATION)
+    # and after the change point in b2.
+function(b1, b2, lag = 0, stat = median)
+{
+   stat(b1[nrow(b1)]/stat(b2$val[1])
+}
+
+#########
+
+   # These are more general, flexible versions of the specific ones above.
+   # They allows us to take differences and ratios and include points to the left and right
+   # of the break/change point in the calculations.
+
+   blockDiff =
+    # b1 b2 are data frames coming from the ts_utils computation defining a time series.
+    # But the rows in b1 correspond to all of the time units before the change point
+    #   (NOT TO THE TIME INTERVAL FOR AGGREGATION)
+    # and after the change point in b2.
+function(b1, b2, lag = 0, stat = median, op = `-`)
+{
+    #assumes each of b1 and b2 are ordered by date.
+    if(length(lag) == 0)
+      return(op(b1$val[nrow(b1)], b2$val[1]))
+
+    lag = rep(lag, length = 2)
+    op( stat(b1$val[seq(max(1, (nrow(b1) - lag[1] + 1)), nrow(b1))]),
+             stat(b2$val[seq(1, min(nrow(b2), 1 + lag[2]))]))
+}
+
+totalBlockDiff =
+    # b1 b2 are data frames coming from the ts_utils computation defining a time series.
+    # But the rows in b1 correspond to all of the time units before the change point
+    #   (NOT TO THE TIME INTERVAL FOR AGGREGATION)
+    # and after the change point in b2.
+function(b1, b2, lag = 0, stat = median, op = `-`)
+{
+ op(stat(b1$val), stat(b2$val[1]))
+}
+
+
+
+
 if(FALSE) {
     ts = c(rnorm(20, .5, .1), rnorm(10, -.5, .2), rnorm(30, .4, .1), rnorm(10, -.2, .05))
     y = seq(as.Date("2017/1/1"), as.Date("2017/12/31"), 1)
     date = sort(sample(y, length(ts)))
     tt = data.frame(vals = ts, dates = date)
-    with(tt, plot(dates, vals, type = "l"))
-    abline(h = 0, col = "red", lty = 3)
     cp = getChangePoints(tt)
 }

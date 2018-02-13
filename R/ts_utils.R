@@ -24,7 +24,7 @@ byInterval = function(df, interval)
     byX
 }
 
-aggregateArticles = function(df, interval = "week", sepFrames = TRUE)
+aggregateArticles = function(df, interval = "week", sepFrames = TRUE, fun = articleAggFun)
     #
     # Basic function to aggregate the framing data
     # sepFrames is whether the results should be separated by individual frames
@@ -35,11 +35,11 @@ aggregateArticles = function(df, interval = "week", sepFrames = TRUE)
         stop("Interval must be one of: 'day', 'week', 'month', or 'year'")
 
     ans = by(df, cut(df$date, interval), function(dd, sep) {
-        if(sep){
+        if(sep) {
             do.call(rbind,
-                    by(dd, dd$top_frame, articleAggFun))
-        }else{
-            articleAggFun(dd)
+                    by(dd, dd$top_frame, fun))
+        } else {
+            fun(dd)
         }
     }, sep = sepFrames)
 
@@ -50,6 +50,7 @@ articleAggFun = function(x)
 {
     data.frame(startDate = min(x$date),
                endDate = max(x$date),
+               nTotal = nrow(x),               
                frame = paste(unique(x$top_frame), collapse = ";"),
                avgPro = mean(x$Pro[x$tone == "Pro"], na.rm = TRUE),
                nPro = sum(x$tone == "Pro"),
@@ -57,8 +58,63 @@ articleAggFun = function(x)
                nNeut = sum(x$tone == "Neutral"),
                avgAnti = mean(x$Anti[x$tone == "Anti"], na.rm = TRUE),
                nAnti = sum(x$tone == "Anti"),
-               nSource = length(unique(x$Source)),
-               nTotal = nrow(x))
+               nSource = length(unique(x$Source))
+               )
+}
+
+
+proConRatio =
+function(x, stat = mean, ...)
+{
+    data.frame(startDate = min(x$date),
+               endDate = max(x$date),
+               nTotal = nrow(x),
+               val = stat(x$Pro/x$Anti, ...)
+               )
+}
+
+proConDiff =
+function(x, stat = mean, ...)
+{
+    data.frame(startDate = min(x$date),
+               endDate = max(x$date),
+               nTotal = nrow(x),
+               val = stat(x$Pro - x$Anti, ...))
+
+}
+
+topFrameDominance =
+    # If both then two columns separately
+    # otherwise combine across pro and con and neutral.    
+function(x, bothProCon = TRUE, neutral = TRUE)
+{
+    
+    ans = data.frame(startDate = min(x$date),
+        endDate = max(x$date))
+
+    if(bothProCon) {
+        ans[c("Anti", "Pro", "Neutral")] = by(x$top_frame, x$tone, computeMaxFrameToNext) # Offer to remove the neutral
+    } else
+        ans$val = computeMaxFrameToNext( x$top_frame)
+}
+
+computeMaxFrameToNext =
+function(frame)
+{
+    tt = sort(table(frame), decreasing = TRUE)
+    tt[1] - tt[2]
+}
+
+topFrameDominanceEntropy =
+    function(x)
+{
+    p = table(x$top_frame)/nrow(x)
+
+    data.frame(startDate = min(x$date),
+               endDate = max(x$date),
+               nTotal = nrow(x),
+               entropy =  sum(-p * log(p))
+               )
 }
 
 getChangePointStart = function(cp)
