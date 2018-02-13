@@ -1,21 +1,32 @@
+\documentclass{article}
+\usepackage{Sweave}
+\usepackage[margin=1in]{geometry}
+\title{Basic Use of the PublicOpinion package}
+\author{Matt Espe}
+\author{Duncan Temple Lang}
+
+\begin{document}
+
+\begin{enumerate}
+\item \bf{Define a time series.} This can be any way to measure a concept interest over time grouping articles within the same time interval, i.e. day for raw, weekly, monthly.
+\item \bf{Find the change points} where the time series crosses from, e.g, Pro to Con, stable to unstable, high variance to low variance, number of articles greater to less than. These are the metrics we compute in step 1. Here we compute the changes
+\item \bf{Find which change points are interesting} i.e. of significance, i.e. the change exceeds a threshold.
+\end{enumerate}
 
 
-1. **Define a time series**. This can be any way to measure a concept interest over time grouping articles within the same time interval, i.e. day for raw, weekly, monthly.
-1. **Find the change points** where the time series crosses from, e.g, Pro to Con, stable to unstable, high variance to low variance, number of articles greater to less than. These are the metrics we compute in step 1. Here we compute the changes
-1. **Find which change points are interesting** i.e. of significance, i.e. the change exceeds a threshold.
-
-
-
-# Define a Time Series.
+\section{Define a Time Series}
 
 We've been dealing with number of Pro articles.
 Of course, we could compute either
-1. the ratio of the number of pro articles to the number of con articles, or
-1. the difference of these two numbers, or
-1. variability/uniformity of the top frame of the articles, or
-1. the difference between the number of articles in the top frame versus the second top frame.
 
-The functions in ts_utils.R compute these for us
+\begin{enumerate}
+\item the ratio of the number of pro articles to the number of con articles, or
+\item the difference of these two numbers, or
+\item variability/uniformity of the top frame of the articles, or
+\item the difference between the number of articles in the top frame versus the second top frame.
+\end{enumerate}
+
+The functions in \code{ts\_utils.R} compute these for us
 
 articleAggrFun computes lots of thins include the unique top frame for the articles,
 number of pro, con, neutral, number of sources.
@@ -25,5 +36,102 @@ proConRatio
 
 proConDiff
 
+\section{Define a time-series}
 
+To create a time series from the raw data, we need to aggregate the since there are multiple observations per unit time.
+The function \code{aggregateArticles} takes a ``frames'' data frame (read into R by \code{readTopicData()},
+an aggregation interval (either day, week, month or year), whether to combine all the frames together or keep them separate,
+and an optional function. By default, a function that calculates the average probability and
+number of obs in the ``Pro'', ``Neutral'' or ``Anti'' columns is used.
 
+<<>>=
+ssm = readTopicData("ssm")
+ssm.monthly = aggregateArticles(ssm, "month", sepFrames = FALSE)
+head(ssm.monthly)
+@ 
+
+Other functions can be used, for example one that calculates the frame entropy,
+
+<<>>=
+ssm.ent = aggregateArticles(ssm, "month", sepFrames = FALSE, fun = topFrameDominanceEntropy)
+head(ssm.ent)
+@ 
+
+More examples of possible functions that can be used can be found in the script ts\_utils.R
+
+\section{Detecting change points}
+
+One of the metrics that we are interested in is when the tone of the
+media stories shifts from pro to anti, etc. Assuming we used the default function in \code{aggregateArticles},
+\code{aggregateArticles()} function outputs a new dataframe, with
+some summary statistics for computed on the input data over the time
+interval specified:
+
+<<>>=
+colnames(ssm.monthly)
+@
+
+Now, if we define a change-point as being when the average ``Pro''
+score crosses the 50\% threshold, we can detect all the places where
+this happens with \code{getChangePoints()},
+
+<<>>=
+cp = getChangePoints(ssm.monthly, changeValue=0.5, var = "avgPro")
+@
+
+\code{getChangePoints()} splits the input dataset into a list, with
+each element of the list being a part of the data corresponding to one
+side of a change-point. To visualize this, we first need to find the
+dates when these point occur,
+
+<<>>=
+cp.dates = getChangePointStart(cp)
+@
+
+And then we can add these to a plot as an event,
+
+<<eval = FALSE>>=
+plot_frames(df = ssm, interval = "month",
+            main = "Same-sex marriage", events = cp.dates,
+            eventHover = cp.dates)
+
+@
+
+Well, this does not seem quite right - perhaps the average ``Pro''
+score is not the right variable. Instead, it might make sense to look
+at the volumn of ``Pro'' articles vs. the ``Anti'' articles. We can
+compute this in R as a new column in the aggregated data,
+
+<<>>=
+ssm.monthly$ProVsAnti = ssm.monthly$nPro/ssm.monthly$nAnti
+head(ssm.monthly)
+@ 
+
+We can now repeat the above procedure looking for change points and visualizing them.
+
+<<>>=
+cp = getChangePoints(ssm.monthly, changeValue=0.5, var = "ProVsAnti")
+cp.dates = getChangePointStart(cp)
+
+@ 
+
+\section{Comparing two intervals}
+
+Now, if we want to compare two blocks to see just how big the differences are between then, we can use the function
+\code{isBlockInteresting()}. It takes a list of ``blocks'' created by \code{getChangePoints()} and a function to compare
+the blocks. Using the entropy scores,
+
+<<>>=
+ssm.ent = aggregateArticles(ssm, "month", sepFrames = FALSE, fun = topFrameDominanceEntropy)
+summary(ssm.ent)
+@ 
+
+If we want to know when the entropy switches around the mean,
+
+<<>>=
+cp.ent = getChangePoints(ssm.ent, changeValue = mean(ssm.ent$entropy), var = "entropy")
+
+isBlockSequenceInteresting(cp.ent, totalBlockRatio, var = "entropy")
+@ 
+
+\end{document}
