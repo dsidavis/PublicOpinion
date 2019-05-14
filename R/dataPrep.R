@@ -43,7 +43,7 @@ function(file = "frames.xlsx",
     else
         f = file
     
-    as.data.frame(read_excel(f, col_names = FALSE))$X__3
+    as.data.frame(read_excel(f, col_names = FALSE))[,3]
 }
 
 
