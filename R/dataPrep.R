@@ -2,13 +2,24 @@ week_start = function(x){
     as.Date(format(x, "%Y-%W-1"), format = "%Y-%W-%u")
 }
 
+mkDate = function(x)
+{
+    if(!is.null(x$FullDate)){
+        date = as.Date(as.character(x$FullDate), format = "%Y%m%d")
+    }else{
+        date = as.Date(paste(x$Year, x$Month, x$Day, sep = "-"), format = "%Y-%m-%d")
+    }
+    
+    date
+}
 
 expandDateFrameTone =
 # All frames have FullDate - it is just pasted %Y%m%d
 # Convert date, get the top frame and tone    
 function(x, frame_names = computeFrameNames())
 {
-    x$date = as.Date(as.character(x$FullDate), format = "%Y%m%d")
+    x$date = mkDate(x)
+
     x$Week_start = week_start(x$date)
     # Get top frame
     ps = grep("^p[0-9]{1,2}$", colnames(x))
